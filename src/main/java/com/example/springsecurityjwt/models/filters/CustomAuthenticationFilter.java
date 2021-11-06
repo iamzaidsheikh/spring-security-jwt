@@ -2,7 +2,6 @@ package com.example.springsecurityjwt.models.filters;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
@@ -21,7 +20,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import antlr.collections.List;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
