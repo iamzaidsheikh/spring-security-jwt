@@ -1,6 +1,7 @@
 package com.example.springsecurityjwt.security;
 
 import com.example.springsecurityjwt.models.filters.CustomAuthenticationFilter;
+import com.example.springsecurityjwt.models.filters.CustomAuthorizationFilter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
         //Adding an authentication filter
         http.addFilter(customAuthenticationFilter);
+        http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class); // We used addFilterBefore() because we need to make sure this filter comes before other filters
     }
 
     @Bean
