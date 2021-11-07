@@ -4,6 +4,7 @@ import com.example.springsecurityjwt.models.filters.CustomAuthenticationFilter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,13 +35,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+        //Overwriting default /login url
+        CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
+        customAuthenticationFilter.setFilterProcessesUrl("/api/login"); //Now the login path is /api/login instead of /login
+
         //Here we configure spring to use jwt instead of sessions
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().anyRequest().permitAll(); //Right now everyone is allowed to access the application
+        //http.authorizeRequests().anyRequest().permitAll(); //Right now everyone is allowed to access the application
+
+        //NOTE : The order of ant matchers matter. If we want to allow certain paths we need to provide them before restricted paths
+        http.authorizeRequests().antMatchers("/api/login/**").permitAll(); 
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/user/**").hasAnyAuthority("ROLE_USER");
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
+        http.authorizeRequests().anyRequest().authenticated();
 
         //Adding an authentication filter
-        http.addFilter(new CustomAuthenticationFilter(authenticationManagerBean()));
+        http.addFilter(customAuthenticationFilter);
     }
 
     @Bean
