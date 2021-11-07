@@ -35,7 +35,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         // This filter intecepts every request that comes to the server
 
         // We dont want to check for login path because its accessable to all
-        if (request.getServletPath().equals("/api/login")) {
+        if (request.getServletPath().equals("/api/login") || request.getServletPath().equals("/api/token/refresh")) {
 
             // We pass this request through the filter
             filterChain.doFilter(request, response);
