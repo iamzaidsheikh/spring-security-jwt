@@ -3,6 +3,8 @@ package com.example.springsecurityjwt.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.springsecurityjwt.exception.EmailAlreadyExistsException;
+import com.example.springsecurityjwt.exception.UsernameAlreadyExistsException;
 import com.example.springsecurityjwt.models.Role;
 import com.example.springsecurityjwt.models.User;
 import com.example.springsecurityjwt.repositories.RoleRepo;
@@ -29,15 +31,28 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
 
+    private boolean emailExists(String email) {
+        return userRepo.findByEmail(email) != null;
+    }
+
+    private boolean usernameExists(String username) {
+        return userRepo.findByUsername(username) != null;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepo.findByUsername(username);
         if(user == null) {
-            log.error("User not found");
-            throw new UsernameNotFoundException("User not found");
+            log.error("User: {} not found", username);
+            throw new UsernameNotFoundException("User: " + username + " not found");
         } else {
             log.info("User {} found", username);
         }
+
+        boolean enabled = true;
+        boolean accountNonExpired = true;
+        boolean credentialsNonExpired = true;
+        boolean accountNonLocked = true;
 
         //We need to grant authorities to these roles
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
@@ -45,12 +60,25 @@ public class UserServiceImpl implements UserService, UserDetailsService{
             authorities.add(new SimpleGrantedAuthority(role.getName())); 
         });
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities); //Here we need to return a spring security user
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), enabled, accountNonExpired,
+        credentialsNonExpired, accountNonLocked, authorities); //Here we need to return a spring security user
     }
 
     @Override
-    public User saveUser(User user) {
-        log.info("Saving new user {}",user.getName());
+    public User registerUser(User user) throws UsernameAlreadyExistsException, EmailAlreadyExistsException {
+        
+        //Check if email already exists
+        if(emailExists(user.getEmail())) {
+            throw new EmailAlreadyExistsException(user.getEmail());
+        } 
+        
+        //Check if username already exists
+        else if(usernameExists(user.getUsername())) {
+            throw new UsernameAlreadyExistsException(user.getUsername());
+        }
+
+        //Then register user
+        log.info("Registering new user {} {}",user.getFirstName(), user.getLastName());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepo.save(user);
     }

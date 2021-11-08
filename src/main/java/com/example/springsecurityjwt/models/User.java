@@ -9,6 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import com.example.springsecurityjwt.validation.ValidEmail;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,9 +30,28 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String name;
+
+    @NotNull
+    @NotEmpty
+    private String firstName;
+
+    @NotNull
+    @NotEmpty
+    private String lastName;
+
+    @NotNull
+    @NotEmpty
     private String username;
+
+    @NotNull
+    @NotEmpty
     private String password;
+
+    @NotNull
+    @NotEmpty
+    @ValidEmail //This is our custom email validator annotation
+    private String email;
+
     @ManyToMany(fetch = FetchType.EAGER)
     //We define this relationship of User model with Role
     //We define fetch because when we fetch the users we also need to fetch their roles

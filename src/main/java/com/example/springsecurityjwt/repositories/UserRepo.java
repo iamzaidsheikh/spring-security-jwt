@@ -8,5 +8,6 @@ public interface UserRepo extends JpaRepository<User, Long> {
 
     //Spring Data JPA understands the function by how we define its name
     User findByUsername(String username);
+    User findByEmail(String email);
 
 }

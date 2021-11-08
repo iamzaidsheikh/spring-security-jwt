@@ -38,12 +38,11 @@ public class SpringSecurityJwtApplication {
 			userService.saveRole(new Role(null, "ROLE_ADMIN"));
 			userService.saveRole(new Role(null, "ROLE_SUPER_ADMIN"));
 
-			//Saving users
-			userService.saveUser(new User(null, "Charles Leclerc", "charles", "1234", new ArrayList<>()));
-			userService.saveUser(new User(null, "Max Verstappen", "max", "1234", new ArrayList<>()));
-			userService.saveUser(new User(null, "Sebastian Vettel", "seb", "1234", new ArrayList<>()));
-			userService.saveUser(new User(null, "Lewis Hamilton", "lewis", "1234", new ArrayList<>()));
-			userService.saveUser(new User(null, "Lando Norris", "lando", "1234", new ArrayList<>()));
+			//Registering users
+			userService.registerUser(new User(null, "Charles", "Leclerc", "charles", "1234", "charlesLeclerc@scuderiaferrari.com", new ArrayList<>()));
+			userService.registerUser(new User(null, "Max", "Verstappen", "max", "1234", "maxVerstappen@redbullracing.com", new ArrayList<>()));
+			userService.registerUser(new User(null, "Sebastian", "Vettel", "seb", "1234", "sebVettel@astonmartinracing.com", new ArrayList<>()));
+			userService.registerUser(new User(null, "Lewis", "Hamilton", "lewis", "1234", "lewisHamilton@mercedesamgracing.com", new ArrayList<>()));
 
 			//Adding roles to users
 			userService.addRoleToUser("charles", "ROLE_USER");

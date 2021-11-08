@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -43,15 +44,15 @@ public class UserController {
         return ResponseEntity.ok().body(userService.getUsers());
     }
 
-    @PostMapping("/user/save")
-    public ResponseEntity<User> saveUser(@RequestBody User user) {
+    @PostMapping("/user/register")
+    public ResponseEntity<User> saveUser(@RequestBody @Valid User user) {
 
         // We need to send a response code 201 for some resource that's added to the
         // server
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath() // This returns localhost:8080
                 .path("api/user/save").toUriString());
 
-        return ResponseEntity.created(uri).body(userService.saveUser(user));
+        return ResponseEntity.created(uri).body(userService.registerUser(user));
     }
 
     @PostMapping("/role/save")

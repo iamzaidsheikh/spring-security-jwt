@@ -8,7 +8,7 @@ import com.example.springsecurityjwt.models.User;
 public interface UserService {
     
     //Here we declare all the methods that we need to manage the application
-    User saveUser(User user);
+    User registerUser(User user);
     Role saveRole(Role role);
     void addRoleToUser(String username, String roleName);
     User getUser(String username);
