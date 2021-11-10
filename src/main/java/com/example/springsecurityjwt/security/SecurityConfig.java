@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         //http.authorizeRequests().anyRequest().permitAll(); //Right now everyone is allowed to access the application
 
         //NOTE : The order of ant matchers matter. If we want to allow certain paths we need to provide them before restricted paths
-        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**").permitAll(); 
+        http.authorizeRequests().antMatchers("/api/login/**", "/api/token/refresh/**", "/api/confirmRegistration/**").permitAll(); 
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/user/**").hasAnyAuthority("ROLE_USER");
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/api/role/save/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_MANAGER");

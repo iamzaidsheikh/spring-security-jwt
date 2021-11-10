@@ -7,8 +7,10 @@ import com.example.springsecurityjwt.exception.EmailAlreadyExistsException;
 import com.example.springsecurityjwt.exception.UsernameAlreadyExistsException;
 import com.example.springsecurityjwt.models.Role;
 import com.example.springsecurityjwt.models.User;
+import com.example.springsecurityjwt.models.VerificationToken;
 import com.example.springsecurityjwt.repositories.RoleRepo;
 import com.example.springsecurityjwt.repositories.UserRepo;
+import com.example.springsecurityjwt.repositories.VerificationTokenRepo;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,6 +32,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
     private final UserRepo userRepo;
     private final RoleRepo roleRepo;
     private final PasswordEncoder passwordEncoder;
+    private final VerificationTokenRepo tokenRepo;
 
     private boolean emailExists(String email) {
         return userRepo.findByEmail(email) != null;
@@ -37,6 +40,19 @@ public class UserServiceImpl implements UserService, UserDetailsService{
 
     private boolean usernameExists(String username) {
         return userRepo.findByUsername(username) != null;
+    }
+
+    public User saveRegisteredUser(User user) {
+        return userRepo.save(user);
+    }
+
+    public VerificationToken getVerificationToken(String VerificationToken) {
+        return tokenRepo.findByToken(VerificationToken);
+    }
+
+    public void createVerificationToken(User user, String token) {
+        VerificationToken myToken = new VerificationToken(token, user);
+        tokenRepo.save(myToken);
     }
 
     @Override
@@ -49,7 +65,6 @@ public class UserServiceImpl implements UserService, UserDetailsService{
             log.info("User {} found", username);
         }
 
-        boolean enabled = true;
         boolean accountNonExpired = true;
         boolean credentialsNonExpired = true;
         boolean accountNonLocked = true;
@@ -60,7 +75,7 @@ public class UserServiceImpl implements UserService, UserDetailsService{
             authorities.add(new SimpleGrantedAuthority(role.getName())); 
         });
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), enabled, accountNonExpired,
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.isEnabled(), accountNonExpired,
         credentialsNonExpired, accountNonLocked, authorities); //Here we need to return a spring security user
     }
 
