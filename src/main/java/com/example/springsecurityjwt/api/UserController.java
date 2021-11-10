@@ -19,9 +19,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.springsecurityjwt.models.Role;
 import com.example.springsecurityjwt.models.RoleToUser;
 import com.example.springsecurityjwt.models.User;
-import com.example.springsecurityjwt.services.UserService;
+import com.example.springsecurityjwt.registration.OnRegistrationCompleteEvent;
+import com.example.springsecurityjwt.services.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,7 +39,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceImpl userService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/users")
     public ResponseEntity<List<User>> getUsers() {
@@ -45,14 +48,20 @@ public class UserController {
     }
 
     @PostMapping("/user/register")
-    public ResponseEntity<User> saveUser(@RequestBody @Valid User user) {
+    public ResponseEntity<User> saveUser(@RequestBody @Valid User user, HttpServletRequest request) {
 
         // We need to send a response code 201 for some resource that's added to the
         // server
         URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath() // This returns localhost:8080
                 .path("api/user/save").toUriString());
 
-        return ResponseEntity.created(uri).body(userService.registerUser(user));
+        String appUrl = request.getContextPath();
+
+        User registeredUser = userService.registerUser(user);
+
+        eventPublisher.publishEvent(new OnRegistrationCompleteEvent(registeredUser, appUrl));
+
+        return ResponseEntity.created(uri).body(registeredUser);
     }
 
     @PostMapping("/role/save")

@@ -4,10 +4,24 @@ spring:
         username: <username>
         password: <password>
     jpa:
-        show-sql: true
         hibernate:
             ddl-auto: create
         properties:
             hibernate:
                 dialect: org.hibernate.dialect.MySQL8Dialect
-                format_sql: true         
+                format_sql: true 
+    mail:
+        host: <host>
+        port: 587
+        username: <username>
+        password: <password>
+        properties:
+            mail:
+                smtp: 
+                    auth: true
+                    starttls: 
+                        enable: true    
+
+    output:
+        ansi:
+            enabled: always            

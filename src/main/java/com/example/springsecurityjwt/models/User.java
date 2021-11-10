@@ -3,6 +3,7 @@ package com.example.springsecurityjwt.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,11 +17,9 @@ import com.example.springsecurityjwt.validation.ValidEmail;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity 
-@Data //Annotation from lombock that provides getters and setters
-@NoArgsConstructor //Lombok annotation
+@Data //Annotation from lombock that provides getters and setters 
 @AllArgsConstructor //Lombok annotation
 public class User {
     
@@ -51,6 +50,14 @@ public class User {
     @NotEmpty
     @ValidEmail //This is our custom email validator annotation
     private String email;
+
+    @Column(name = "enabled")
+    private boolean enabled;
+
+    public User() {
+        super();
+        this.enabled=false; //On User creation the enabled property will be false
+    }
 
     @ManyToMany(fetch = FetchType.EAGER)
     //We define this relationship of User model with Role
